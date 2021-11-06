@@ -21,6 +21,8 @@ import {
     SET_ADD_INVENTORY_DATA,
     SET_CONSUME_INVENTORY_VISIBILITY,
     SET_CONSUME_INVENTORY_DATA,
+    SET_ACCEPT_USER_VISIBILITY,
+    SET_ACCEPT_USER_DATA,
 } from './actionTypes';
 
 export const setNormalCustomersVisibility = (payload) => ({
@@ -130,5 +132,15 @@ export const setConsumeInventoryVisibility = (payload) => ({
 
 export const setConsumeInventoryData = (payload) => ({
     type: SET_CONSUME_INVENTORY_DATA,
+    payload,
+});
+
+export const setAcceptUserVisibility = (payload) => ({
+    type: SET_ACCEPT_USER_VISIBILITY,
+    payload,
+});
+
+export const setAcceptUserData = (payload) => ({
+    type: SET_ACCEPT_USER_DATA,
     payload,
 });

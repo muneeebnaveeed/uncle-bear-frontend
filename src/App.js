@@ -16,6 +16,7 @@ import NonAuthLayout from './components/NonAuthLayout';
 import './assets/app.css';
 import './theme.scss';
 import './assets/react-datepicker.css';
+import './assets/scss/custom/print.css';
 
 // Fake backend
 import fakeBackend from './helpers/AuthType/fakeBackend';
@@ -29,6 +30,7 @@ import CreateProductGroup from './pages/_/products/CreateProductGroup';
 import CreateSalary from './pages/_/expenses/CreateSalary';
 import CreateProduct from './pages/_/products/CreateProduct';
 import CreateAddInventory from './pages/_/inventory/CreateAddInventory';
+import AcceptUser from './pages/_/users/AcceptUser';
 // Activating fake backend
 fakeBackend();
 
@@ -72,6 +74,7 @@ class App extends Component {
                 <CreateProductGroup />
                 <CreateSalary />
                 <CreateAddInventory />
+                <AcceptUser />
 
                 <CreateProduct />
                 <Router>

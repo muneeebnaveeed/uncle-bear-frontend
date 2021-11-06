@@ -1,173 +1,95 @@
-import React, { Component } from 'react';
-import { Row, Col, Button, Alert, Container, Label, FormGroup } from 'reactstrap';
+import React, { Component, useEffect } from 'react';
 
-// availity-reactstrap-validation
-import { AvForm, AvField } from 'availity-reactstrap-validation';
-
-// action
+import { Row, Col, Input, Button, Alert, Container, Label, FormGroup } from 'reactstrap';
 
 // Redux
-import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-
+import { useHistory } from 'react-router-dom';
 // import images
-import logodark from '../../assets/images/logo-dark.png';
+import { AiOutlineLogin } from 'react-icons/ai';
+import { useFormik } from 'formik';
+import { useMutation } from 'react-query';
+import { useDispatch, useSelector } from 'react-redux';
+import { When } from 'react-if';
+import useAlert from '../../components/Common/useAlert';
+import { get, post } from '../../helpers/server';
+import { setUser } from '../../store/globals/actions';
 
-class Register extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            email: '',
-            username: '',
-            password: '',
-        };
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
+const Register = () => {
+    const history = useHistory();
+    const handleLogin = () => history.push('/login');
+    const alert = useAlert();
 
-    componentDidMount() {
-        document.body.classList.add('auth-body-bg');
-    }
+    const registerMutation = useMutation((payload) => post('/auth/register', payload), {
+        onSuccess: () => {
+            alert.showAlert({ color: 'success', heading: 'Access requested successfully' });
+        },
+        onError: (err) => {
+            alert.showAlert({ heading: 'Unable to login', err });
+        },
+    });
 
-    render() {
-        return (
-            <>
-                <div className="home-btn d-none d-sm-block">
-                    <Link to="/">
-                        <i className="mdi mdi-home-variant h2 text-white" />
-                    </Link>
+    const formik = useFormik({
+        initialValues: { name: '', password: '', passwordConfirm: '' },
+        validate: () => ({}),
+        onSubmit: (values) => {
+            registerMutation.mutate(values);
+        },
+    });
+
+    return (
+        <>
+            <div className="tw-w-screen tw-h-screen tw-flex tw-flex-col tw-items-center tw-overflow-hidden ">
+                <div className="tw-bg-gray-200 tw-p-4 tw-w-[277px] tw-mt-[250px] tw-relative">
+                    <When condition={registerMutation.isLoading}>
+                        <div className="tw-w-full tw-h-full tw-bg-white tw-opacity-50 tw-absolute tw-top-0 tw-left-0" />
+                    </When>
+                    <h1 className="tw-text-xl tw-font-bold">Request Access</h1>
+                    <FormGroup className="form-required">
+                        <Label>Username</Label>
+                        <Input
+                            autoComplete="none"
+                            type="text"
+                            name="name"
+                            value={formik.values.name}
+                            onChange={formik.handleChange}
+                        />
+                    </FormGroup>
+                    <FormGroup className="form-required">
+                        <Label>Password</Label>
+                        <Input
+                            autoComplete="none"
+                            type="password"
+                            name="password"
+                            value={formik.values.password}
+                            onChange={formik.handleChange}
+                        />
+                    </FormGroup>
+                    <FormGroup className="form-required">
+                        <Label>Confirm Password</Label>
+                        <Input
+                            autoComplete="none"
+                            type="password"
+                            name="passwordConfirm"
+                            value={formik.values.passwordConfirm}
+                            onChange={formik.handleChange}
+                        />
+                    </FormGroup>
+                    <Button
+                        color="primary"
+                        className="tw-flex tw-items-center tw-justify-center tw-gap-2"
+                        block
+                        onClick={formik.handleSubmit}
+                    >
+                        <AiOutlineLogin /> {registerMutation.isLoading ? 'Requesting...' : 'Request'}
+                    </Button>
+                    <Button color="link" block onClick={handleLogin}>
+                        I already have an access
+                    </Button>
                 </div>
-                <div>
-                    <Container fluid className="p-0">
-                        <Row className="no-gutters">
-                            <Col lg={4}>
-                                <div className="authentication-page-content p-4 d-flex align-items-center min-vh-100">
-                                    <div className="w-100">
-                                        <Row className="justify-content-center">
-                                            <Col lg={9}>
-                                                <div>
-                                                    <div className="text-center">
-                                                        <div>
-                                                            <Link to="#" className="logo">
-                                                                <img src={logodark} height="20" alt="logo" />
-                                                            </Link>
-                                                        </div>
-
-                                                        <h4 className="font-size-18 mt-4">Register account</h4>
-                                                        <p className="text-muted">Get your free Nazox account now.</p>
-                                                    </div>
-
-                                                    {this.props.user && (
-                                                        <Alert color="success">Registration Done Successfully.</Alert>
-                                                    )}
-
-                                                    {this.props.registrationError && (
-                                                        <Alert color="danger">{this.props.registrationError}</Alert>
-                                                    )}
-
-                                                    <div className="p-2 mt-5">
-                                                        <AvForm
-                                                            onValidSubmit={this.handleSubmit}
-                                                            className="form-horizontal"
-                                                        >
-                                                            <FormGroup className="auth-form-group-custom mb-4">
-                                                                <i className="ri-mail-line auti-custom-input-icon" />
-                                                                <Label htmlFor="useremail">Email</Label>
-                                                                <AvField
-                                                                    name="email"
-                                                                    value={this.state.email}
-                                                                    validate={{ email: true, required: true }}
-                                                                    type="email"
-                                                                    className="form-control"
-                                                                    id="useremail"
-                                                                    placeholder="Enter email"
-                                                                />
-                                                            </FormGroup>
-
-                                                            <FormGroup className="auth-form-group-custom mb-4">
-                                                                <i className="ri-user-2-line auti-custom-input-icon" />
-                                                                <Label htmlFor="username">Username</Label>
-                                                                <AvField
-                                                                    name="username"
-                                                                    value={this.state.username}
-                                                                    type="text"
-                                                                    className="form-control"
-                                                                    id="username"
-                                                                    placeholder="Enter username"
-                                                                />
-                                                            </FormGroup>
-
-                                                            <FormGroup className="auth-form-group-custom mb-4">
-                                                                <i className="ri-lock-2-line auti-custom-input-icon" />
-                                                                <Label htmlFor="userpassword">Password</Label>
-                                                                <AvField
-                                                                    name="password"
-                                                                    value={this.state.password}
-                                                                    type="password"
-                                                                    className="form-control"
-                                                                    id="userpassword"
-                                                                    placeholder="Enter password"
-                                                                />
-                                                            </FormGroup>
-
-                                                            <div className="text-center">
-                                                                <Button
-                                                                    color="primary"
-                                                                    className="w-md waves-effect waves-light"
-                                                                    type="submit"
-                                                                >
-                                                                    {this.props.loading ? 'Loading ...' : 'Register'}
-                                                                </Button>
-                                                            </div>
-
-                                                            <div className="mt-4 text-center">
-                                                                <p className="mb-0">
-                                                                    By registering you agree to the Nazox{' '}
-                                                                    <Link to="#" className="text-primary">
-                                                                        Terms of Use
-                                                                    </Link>
-                                                                </p>
-                                                            </div>
-                                                        </AvForm>
-                                                    </div>
-
-                                                    <div className="mt-5 text-center">
-                                                        <p>
-                                                            Already have an account ?{' '}
-                                                            <Link
-                                                                to="/login"
-                                                                className="font-weight-medium text-primary"
-                                                            >
-                                                                {' '}
-                                                                Login
-                                                            </Link>{' '}
-                                                        </p>
-                                                        <p>
-                                                            © 2020 Nazox. Crafted with{' '}
-                                                            <i className="mdi mdi-heart text-danger" /> by Themesdesign
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </Col>
-                                        </Row>
-                                    </div>
-                                </div>
-                            </Col>
-                            <Col lg={8}>
-                                <div className="authentication-bg">
-                                    <div className="bg-overlay" />
-                                </div>
-                            </Col>
-                        </Row>
-                    </Container>
-                </div>
-            </>
-        );
-    }
-}
-
-const mapStatetoProps = (state) => {
-    const { user, registrationError, loading } = state.Account;
-    return { user, registrationError, loading };
+                <div className="tw-p-4">{alert.renderAlert()}</div>
+            </div>
+        </>
+    );
 };
 
-export default connect(mapStatetoProps, null)(Register);
+export default Register;

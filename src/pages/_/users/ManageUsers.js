@@ -5,13 +5,15 @@ import { batch, useDispatch, useSelector } from 'react-redux';
 import { useDebouncedValue } from 'rooks';
 import { useMutation, useQueryClient } from 'react-query';
 import swal from 'sweetalert';
-import { AiFillEdit } from 'react-icons/ai';
+import { AiFillDelete, AiFillEdit, AiOutlineCheck, AiOutlineClose } from 'react-icons/ai';
+import cls from 'classnames';
 import { del, get, useQuery } from '../../../helpers';
-import { setShopsData, setShopsVisibility } from '../../../store/actions';
+import { setAcceptUserData, setAcceptUserVisibility, setShopsData, setShopsVisibility } from '../../../store/actions';
 import useAlert from '../../../components/Common/useAlert';
 import EmptyTableRow from '../../../components/Common/EmptyTableRow';
 
 const ManageUsers = () => {
+    const user = useSelector((s) => s.globals.user);
     const dispatch = useDispatch();
     const queryClient = useQueryClient();
     const alert = useAlert();
@@ -33,11 +35,11 @@ const ManageUsers = () => {
         },
     });
 
-    const handleEdit = useCallback(
-        (shop) => {
+    const handleAccept = useCallback(
+        (userId) => {
             batch(() => {
-                dispatch(setShopsData(shop));
-                dispatch(setShopsVisibility(true));
+                dispatch(setAcceptUserData({ _id: userId }));
+                dispatch(setAcceptUserVisibility(true));
             });
         },
         [dispatch]
@@ -95,7 +97,7 @@ const ManageUsers = () => {
                                         <tr>
                                             <th>#</th>
                                             <th>Name</th>
-                                            <th>Phone</th>
+                                            <th>Role</th>
                                             <th>Manage</th>
                                         </tr>
                                     </thead>
@@ -121,25 +123,58 @@ const ManageUsers = () => {
                                                             <td className="tw-align-middle">
                                                                 {query.data?.pagingCounter + index}
                                                             </td>
-                                                            <td className="tw-align-middle">{e.address}</td>
-                                                            <td className="tw-align-middle">{e.phone}</td>
+                                                            <td className="tw-align-middle">{e.name}</td>
+                                                            <td
+                                                                className={cls('tw-align-middle', {
+                                                                    'tw-font-bold': !e.role,
+                                                                })}
+                                                            >
+                                                                <If condition={!e.role}>
+                                                                    <Then>
+                                                                        <h1 className="tw-text-lg tw-font-bold tw-mb-0">
+                                                                            PENDING
+                                                                        </h1>
+                                                                    </Then>
+                                                                    <Else>{e.role || 'PENDING'}</Else>
+                                                                </If>
+                                                            </td>
                                                             <td className="tw-align-middle">
-                                                                <ButtonGroup>
+                                                                <When condition={!e.role}>
+                                                                    <div className="tw-flex tw-gap-[6px]">
+                                                                        <Button
+                                                                            color="success"
+                                                                            className="tw-w-[97px] tw-flex tw-justify-center tw-items-center tw-gap-2"
+                                                                            onClick={() => handleAccept(e._id)}
+                                                                        >
+                                                                            <AiOutlineCheck />
+                                                                            Accept
+                                                                        </Button>
+                                                                        <Button
+                                                                            color="danger"
+                                                                            className="tw-w-[97px] tw-flex tw-justify-center tw-items-center tw-gap-2"
+                                                                            onClick={() => handleDelete(e._id)}
+                                                                        >
+                                                                            <AiOutlineClose />
+                                                                            Reject
+                                                                        </Button>
+                                                                    </div>
+                                                                </When>
+                                                                <When condition={e.role && e._id !== user?._id}>
                                                                     <Button
-                                                                        color="light"
+                                                                        color="danger"
                                                                         className="tw-min-w-[200px] tw-flex tw-justify-center tw-items-center tw-gap-2"
-                                                                        onClick={() => handleEdit(e)}
+                                                                        onClick={() => handleAccept(e._id)}
                                                                     >
-                                                                        <AiFillEdit />
-                                                                        Edit
+                                                                        <AiFillDelete />
+                                                                        Delete
                                                                     </Button>
-                                                                </ButtonGroup>
+                                                                </When>
                                                             </td>
                                                         </tr>
                                                     ))}
                                                 </Then>
                                                 <Else>
-                                                    <EmptyTableRow columnCount={4}>No users registered yet</EmptyTableRow>
+                                                    <EmptyTableRow columnCount={4}>No users found</EmptyTableRow>
                                                 </Else>
                                             </If>
                                         </When>

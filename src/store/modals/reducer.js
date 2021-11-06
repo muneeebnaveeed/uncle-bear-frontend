@@ -1,4 +1,6 @@
 import {
+    SET_ACCEPT_USER_DATA,
+    SET_ACCEPT_USER_VISIBILITY,
     SET_ADD_INVENTORY_DATA,
     SET_ADD_INVENTORY_VISIBILITY,
     SET_CONSUME_INVENTORY_DATA,
@@ -65,6 +67,10 @@ const INIT_STATE = {
         data: {},
     },
     consumeInventories: {
+        visible: false,
+        data: {},
+    },
+    acceptUser: {
         visible: false,
         data: {},
     },
@@ -245,6 +251,22 @@ const Layout = (state = INIT_STATE, action) => {
                 ...state,
                 consumeInventories: {
                     ...state.consumeInventories,
+                    data: action.payload,
+                },
+            };
+        case SET_ACCEPT_USER_VISIBILITY:
+            return {
+                ...state,
+                acceptUser: {
+                    ...state.acceptUser,
+                    visible: action.payload,
+                },
+            };
+        case SET_ACCEPT_USER_DATA:
+            return {
+                ...state,
+                acceptUser: {
+                    ...state.acceptUser,
                     data: action.payload,
                 },
             };

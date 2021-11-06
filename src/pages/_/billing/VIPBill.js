@@ -2,16 +2,18 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Button, ButtonGroup, Card, CardBody, Col, Container, Input, Label, Row, Table } from 'reactstrap';
 
 // Import Breadcrumb
+import { When } from 'react-if';
+import { useMutation } from 'react-query';
+import { useSelector } from 'react-redux';
+import { useReactToPrint } from 'react-to-print';
 import GroupedProducts from './GroupedProducts';
 import Cart from './Cart';
 import BillingFactory from '../../../helpers/BillingFactory';
 import CustomerSelect from './CustomerSelect';
 import FormatNumber from '../../../components/Common/FormatNumber';
-import { When } from 'react-if';
-import { useMutation } from 'react-query';
 import { post } from '../../../helpers';
-import { useSelector } from 'react-redux';
 import useAlert from '../../../components/Common/useAlert';
+import Receipt from './Receipt';
 
 const VIPBill = () => {
     const [products, setProducts] = useState([]);
@@ -19,23 +21,22 @@ const VIPBill = () => {
     const [deductionFromBalance, setDeductionFromBalance] = useState('0');
     const [customer, setCustomer] = useState();
 
-    const shop = useSelector(s => s.globals.shop);
+    const shop = useSelector((s) => s.globals.shop);
     const alert = useAlert();
 
-    const { current: billingFactory } = useRef(new BillingFactory({ products, setProducts, discount, setDiscount, deductionFromBalance, setDeductionFromBalance }));
+    const [registeredBillId, setRegisteredBillId] = useState(null);
+    const receiptRef = useRef();
 
-    const mutation = useMutation(({ payload, shop }) => post('/bills/vip', payload, {}, { shop }), {
-        onSuccess: async () => {
-            alert.showAlert({ color: 'success', heading: 'Bill Registered' });
-
-            billingFactory.resetBill();
-            handleCustomerChange({});
-            handleChangeDeductionFromBalance(0);
-        },
-        onError: (err) => {
-            alert.showAlert({ heading: 'Unable to register bill', err });
-        },
-    });
+    const { current: billingFactory } = useRef(
+        new BillingFactory({
+            products,
+            setProducts,
+            discount,
+            setDiscount,
+            deductionFromBalance,
+            setDeductionFromBalance,
+        })
+    );
 
     const handleCustomerChange = (c) => {
         setCustomer(c);
@@ -47,17 +48,41 @@ const VIPBill = () => {
         billingFactory.deductionFromBalance = v;
     };
 
+    const handlePrint = useReactToPrint({
+        content: () => receiptRef.current,
+        onAfterPrint: () => {
+            billingFactory.resetBill();
+            handleCustomerChange({});
+            handleChangeDeductionFromBalance(0);
+        },
+    });
+
+    const mutation = useMutation(({ payload, shop }) => post('/bills/vip', payload, {}, { shop }), {
+        onSuccess: async (data) => {
+            alert.showAlert({ color: 'success', heading: 'Bill Registered' });
+
+            setRegisteredBillId(data.billId);
+            handlePrint();
+        },
+        onError: (err) => {
+            alert.showAlert({ heading: 'Unable to register bill', err });
+        },
+    });
+
     const handleSave = () => {
-        const payload = { 
+        const payload = {
             type: 'VIP',
             customer: customer?.value?._id,
             vipBalancePercent: Number(billingFactory.deductionFromBalance),
-            discountPercent: Number(billingFactory.discount)
+            discountPercent: Number(billingFactory.discount),
         };
-        const products = billingFactory.products.map(p => ({ product: p._id, qty: p.qty }));
+        const products = billingFactory.products.map((p) => ({ product: p._id, qty: p.qty }));
         payload.products = products;
         mutation.mutate({ payload, shop: shop?._id });
-    }
+    };
+
+    const subtotal = billingFactory.getSubtotal();
+    const total = billingFactory.getTotal();
 
     return (
         <>
@@ -77,7 +102,12 @@ const VIPBill = () => {
                                             <div className="page-title-box d-flex align-items-center justify-content-between pb-0">
                                                 <h4>Customer</h4>
                                             </div>
-                                            <CustomerSelect type="vip" width="100%" value={customer} onChange={handleCustomerChange} />
+                                            <CustomerSelect
+                                                type="vip"
+                                                width="100%"
+                                                value={customer}
+                                                onChange={handleCustomerChange}
+                                            />
                                         </Col>
                                     </Row>
                                     <Row>
@@ -91,9 +121,7 @@ const VIPBill = () => {
                                         </Col>
                                     </Row>
                                 </Col>
-                                <Col xl="6">
-                                    
-                                </Col>
+                                <Col xl="6" />
                             </Row>
                         </CardBody>
                     </Card>
@@ -108,19 +136,35 @@ const VIPBill = () => {
                 subtotal={billingFactory.getSubtotal()}
                 discount={billingFactory.discount}
                 onChangeDiscount={billingFactory.handleChangeDiscount}
-                total={billingFactory.getTotal()}
+                total={total}
                 balance={billingFactory.balance}
-                change={billingFactory.getChange()}
+                change={subtotal}
                 deductionFromBalance={billingFactory.getDeductionFromBalance()}
                 isSaving={mutation.isLoading}
                 onSave={handleSave}
             >
                 <Label>Deduct from Balance (%)</Label>
-                <Input type="number" value={deductionFromBalance} onChange={(e) => handleChangeDeductionFromBalance(e.target.value)} />
+                <Input
+                    type="number"
+                    value={deductionFromBalance}
+                    onChange={(e) => handleChangeDeductionFromBalance(e.target.value)}
+                />
             </Cart>
             <Row className="tw-mt-4">
                 <Col xl={12}>{alert.renderAlert()}</Col>
             </Row>
+            <div className="tw-hidden">
+                <Receipt
+                    ref={receiptRef}
+                    shop={shop}
+                    billId={registeredBillId}
+                    products={billingFactory.products}
+                    subtotal={subtotal}
+                    discount={billingFactory.discount}
+                    total={total}
+                    customer={customer?.value}
+                />
+            </div>
         </>
     );
 };

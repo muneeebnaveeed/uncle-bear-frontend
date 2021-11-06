@@ -52,7 +52,7 @@ const DateFilter = ({ query, onSelectBill }) => {
                                         <Collapse isOpened={e.billId === billExpanded}>
                                             <FilteredBill
                                                 _id={e._id}
-                                                customer={e.customer.name}
+                                                customer={e.customer?.name}
                                                 type={e.type}
                                                 products={e.products}
                                                 onSelectBill={onSelectBill}

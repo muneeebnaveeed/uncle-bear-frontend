@@ -20,6 +20,7 @@ import { AiOutlineSearch } from 'react-icons/ai';
 import _ from 'lodash';
 import { useMutation } from 'react-query';
 import { useSelector } from 'react-redux';
+import { useReactToPrint } from 'react-to-print';
 import GroupedProducts from '../GroupedProducts';
 import Cart from '../Cart';
 import RefundFactory from '../../../../helpers/RefundFactory';
@@ -28,6 +29,7 @@ import DateFilter from './DateFilter';
 import { get, post, useQuery } from '../../../../helpers';
 import IdFilter from './IdFilter';
 import useAlert from '../../../../components/Common/useAlert';
+import Receipt from '../Receipt';
 
 const RefundBill = () => {
     const [products, setProducts] = useState([]);
@@ -42,7 +44,19 @@ const RefundBill = () => {
 
     const shop = useSelector((s) => s.globals.shop);
 
+    const [registeredBillId, setRegisteredBillId] = useState(null);
+    const receiptRef = useRef();
+
     const { current: refundFactory } = useRef(new RefundFactory({ products, setProducts, discount, setDiscount }));
+
+    const handlePrint = useReactToPrint({
+        content: () => receiptRef.current,
+        onAfterPrint: () => {
+            refundFactory.resetBill();
+            refundFactory.resetBill();
+            refundFactory.setInitialProducts([]);
+        },
+    });
 
     const dateFilterQuery = useQuery(
         ['bills', 1, 20, startDate, endDate],
@@ -59,11 +73,12 @@ const RefundBill = () => {
     const refundMutation = useMutation(
         ({ payload, shopId }) => post(`/bills/refund/${selectedBill}`, payload, {}, { shop: shopId }),
         {
-            onSuccess: async () => {
+            onSuccess: async (data) => {
                 alert.showAlert({ color: 'success', heading: 'Bill Registered' });
 
-                refundFactory.resetBill();
-                refundFactory.setInitialProducts([]);
+                setRegisteredBillId(data.billId);
+                setCustomer(data.customer);
+                handlePrint();
             },
             onError: (err) => {
                 alert.showAlert({ heading: 'Unable to register bill', err });
@@ -96,6 +111,9 @@ const RefundBill = () => {
         const payload = refundFactory.products.map((p) => ({ product: p._id, qty: p.qty }));
         refundMutation.mutate({ payload, shopId: shop._id });
     };
+
+    const subtotal = refundFactory.getSubtotal();
+    const total = refundFactory.getTotal();
 
     return (
         <>
@@ -172,10 +190,10 @@ const RefundBill = () => {
                 onIncrease={refundFactory.handleIncrease}
                 onDecrease={refundFactory.handleDecrease}
                 onDelete={refundFactory.handleDelete}
-                subtotal={refundFactory.getSubtotal()}
+                subtotal={subtotal}
                 discount={refundFactory.discount}
                 onChangeDiscount={refundFactory.handleChangeDiscount}
-                total={refundFactory.getTotal()}
+                total={total}
                 balance={refundFactory.balance}
                 change={refundFactory.getChange()}
                 isSaving={refundMutation.isLoading}
@@ -184,6 +202,18 @@ const RefundBill = () => {
             <Row className="tw-mt-4">
                 <Col xl={12}>{alert.renderAlert()}</Col>
             </Row>
+            <div className="tw-hidden">
+                <Receipt
+                    ref={receiptRef}
+                    shop={shop}
+                    billId={registeredBillId}
+                    products={refundFactory.products}
+                    subtotal={subtotal}
+                    discount={refundFactory.discount}
+                    total={total}
+                    customer={customer}
+                />
+            </div>
         </>
     );
 };

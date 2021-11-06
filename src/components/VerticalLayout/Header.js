@@ -1,16 +1,14 @@
 import React, { Component } from 'react';
 
 import { connect } from 'react-redux';
-import {
-    Button,
-} from 'reactstrap';
+import { Button } from 'reactstrap';
 
 import { Link } from 'react-router-dom';
 
 // Import menuDropdown
 import { withNamespaces } from 'react-i18next';
+import { When } from 'react-if';
 import ProfileMenu from '../CommonForBoth/TopbarDropdown/ProfileMenu';
-
 
 // Redux Store
 import { toggleRightSidebar } from '../../store/actions';
@@ -43,7 +41,7 @@ class Header extends Component {
         this.props.toggleRightSidebar();
     }
 
-    toggleFullscreen() {
+    toggleFullscreen = () => {
         if (
             !document.fullscreenElement &&
             /* alternative standard method */ !document.mozFullScreenElement &&
@@ -64,7 +62,7 @@ class Header extends Component {
         } else if (document.webkitCancelFullScreen) {
             document.webkitCancelFullScreen();
         }
-    }
+    };
 
     render() {
         return (
@@ -74,7 +72,9 @@ class Header extends Component {
                         <div className="d-flex">
                             <div className="navbar-brand-box d-flex tw-justify-center tw-items-center">
                                 <Link to="#" className="logo logo-light">
-                                    <h1 className="tw-text-white tw-font-bold tw-mt-3 tw-text-xl tw-text-center tw-my-auto m-0">Uncle Bear's</h1>
+                                    <h1 className="tw-text-white tw-font-bold tw-mt-3 tw-text-xl tw-text-center tw-my-auto m-0">
+                                        Uncle Bear's
+                                    </h1>
                                 </Link>
                             </div>
 
@@ -102,9 +102,11 @@ class Header extends Component {
                                 </Button>
                             </div>
 
-                            <div className="ml-1 tw-flex tw-items-center tw-min-w-[200px]">
-                                <ShopSelect />
-                            </div>
+                            <When condition={this.props.user.role === 'ADMINISTRATOR'}>
+                                <div className="ml-1 tw-flex tw-items-center tw-min-w-[200px]">
+                                    <ShopSelect />
+                                </div>
+                            </When>
 
                             <ProfileMenu />
                         </div>
@@ -117,7 +119,7 @@ class Header extends Component {
 
 const mapStatetoProps = (state) => {
     const { layoutType } = state.Layout;
-    return { layoutType };
+    return { layoutType, user: state.globals.user };
 };
 
 export default connect(mapStatetoProps, { toggleRightSidebar })(withNamespaces()(Header));

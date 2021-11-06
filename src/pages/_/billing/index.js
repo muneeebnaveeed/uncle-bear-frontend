@@ -18,7 +18,7 @@ const breadcrumbItems = [
 ];
 
 const Billing = () => {
-    const [type, setType] = useState('refund');
+    const [type, setType] = useState('walk-in');
 
     return (
         <>

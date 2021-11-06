@@ -4,12 +4,14 @@ import { Button, ButtonGroup, Card, CardBody, Col, Container, Input, Row, Table 
 // Import Breadcrumb
 import { useSelector } from 'react-redux';
 import { useMutation } from 'react-query';
+import { useReactToPrint } from 'react-to-print';
 import GroupedProducts from './GroupedProducts';
 import Cart from './Cart';
 import BillingFactory from '../../../helpers/BillingFactory';
 import CustomerSelect from './CustomerSelect';
 import { post } from '../../../helpers';
 import useAlert from '../../../components/Common/useAlert';
+import Receipt from './Receipt';
 
 const NormalBill = () => {
     const [products, setProducts] = useState([]);
@@ -19,18 +21,27 @@ const NormalBill = () => {
     const shop = useSelector((s) => s.globals.shop);
     const alert = useAlert();
 
-    const { current: billingFactory } = useRef(new BillingFactory({ products, setProducts, discount, setDiscount }));
+    const [registeredBillId, setRegisteredBillId] = useState(null);
+    const receiptRef = useRef();
 
+    const { current: billingFactory } = useRef(new BillingFactory({ products, setProducts, discount, setDiscount }));
     const handleCustomerChange = (c) => {
         setCustomer(c);
     };
-
-    const mutation = useMutation(({ payload, s }) => post('/bills', payload, {}, { shop: s }), {
-        onSuccess: async () => {
-            alert.showAlert({ color: 'success', heading: 'Bill Registered' });
-
+    const handlePrint = useReactToPrint({
+        content: () => receiptRef.current,
+        onAfterPrint: () => {
             billingFactory.resetBill();
             handleCustomerChange({});
+        },
+    });
+
+    const mutation = useMutation(({ payload, s }) => post('/bills', payload, {}, { shop: s }), {
+        onSuccess: async (data) => {
+            alert.showAlert({ color: 'success', heading: 'Bill Registered' });
+
+            setRegisteredBillId(data.billId);
+            handlePrint();
         },
         onError: (err) => {
             alert.showAlert({ heading: 'Unable to register bill', err });
@@ -44,6 +55,9 @@ const NormalBill = () => {
         payload.products = billingFactory.products.map((p) => ({ product: p._id, qty: p.qty }));
         mutation.mutate({ payload, s: shop._id });
     };
+
+    const subtotal = billingFactory.getSubtotal();
+    const total = billingFactory.getTotal();
 
     return (
         <>
@@ -77,16 +91,28 @@ const NormalBill = () => {
                 onIncrease={billingFactory.handleIncrease}
                 onDecrease={billingFactory.handleDecrease}
                 onDelete={billingFactory.handleDelete}
-                subtotal={billingFactory.getSubtotal()}
+                subtotal={subtotal}
                 discount={billingFactory.discount}
                 onChangeDiscount={billingFactory.handleChangeDiscount}
-                total={billingFactory.getTotal()}
+                total={total}
                 onSave={handleSave}
                 isSaving={mutation.isLoading}
             />
             <Row className="tw-mt-4">
                 <Col xl={12}>{alert.renderAlert()}</Col>
             </Row>
+            <div className="tw-hidden">
+                <Receipt
+                    ref={receiptRef}
+                    shop={shop}
+                    billId={registeredBillId}
+                    products={billingFactory.products}
+                    subtotal={subtotal}
+                    discount={billingFactory.discount}
+                    total={total}
+                    customer={customer?.value}
+                />
+            </div>
         </>
     );
 };

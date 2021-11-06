@@ -8,11 +8,12 @@ import { useHistory } from 'react-router-dom';
 import { AiOutlineLogin } from 'react-icons/ai';
 import { useFormik } from 'formik';
 import { useMutation } from 'react-query';
-import { useDispatch, useSelector } from 'react-redux';
+import { batch, useDispatch, useSelector } from 'react-redux';
 import { When } from 'react-if';
+import _ from 'lodash';
 import useAlert from '../../components/Common/useAlert';
 import { get, post } from '../../helpers/server';
-import { setUser } from '../../store/globals/actions';
+import { setUser, setShop } from '../../store/globals/actions';
 
 const Login = () => {
     const history = useHistory();
@@ -24,7 +25,10 @@ const Login = () => {
     const loginMutation = useMutation((payload) => post('/auth/login', payload), {
         onSuccess: (data) => {
             localStorage.setItem('authUser', data.token);
-            dispatch(setUser(data));
+            batch(() => {
+                dispatch(setUser(_.omit(data, ['token'])));
+                dispatch(setShop(data.shop));
+            });
             history.push('/');
         },
         onError: (err) => {
@@ -34,7 +38,10 @@ const Login = () => {
 
     const decodeMutation = useMutation((token) => get(`/auth/decode/${token}`), {
         onSuccess: (data) => {
-            dispatch(setUser(data));
+            batch(() => {
+                dispatch(setUser(data));
+                dispatch(setShop(data.shop));
+            });
             history.push('/');
         },
         onError: (err) => {
