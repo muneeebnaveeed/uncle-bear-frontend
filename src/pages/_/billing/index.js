@@ -10,7 +10,7 @@ import { get, useQuery } from '../../../helpers';
 import WalkIn from './WalkInBill.js';
 import NormalBill from './NormalBill';
 import VIPBill from './VIPBill';
-import RefundBill from './RefundBill';
+import RefundBill from './RefundBill/index';
 
 const breadcrumbItems = [
     { title: 'Uncle Bear', link: '#' },

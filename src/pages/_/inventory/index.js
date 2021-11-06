@@ -7,8 +7,9 @@ import { AiFillPrinter } from 'react-icons/ai';
 import ReactDatePicker from 'react-datepicker';
 import Breadcrumbs from '../../../components/Common/Breadcrumb';
 import ManageListInventory from './ManageListInventory';
-import ManageShopExpenses from './ManageShopExpenses';
+import ManageAddInventory from './ManageAddInventory';
 import ManageSalaries from './ManageSalaries';
+import ManageConsumeInventory from './ManageConsumeInventory';
 
 const breadcrumbItems = [
     { title: 'Uncle Bear', link: '#' },
@@ -17,6 +18,9 @@ const breadcrumbItems = [
 
 const Inventory = () => {
     const [type, setType] = useState('list');
+
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date());
 
     return (
         <>
@@ -53,19 +57,19 @@ const Inventory = () => {
                             </ButtonGroup>
                         </Col>
                         <Col xl={6} md={12}>
-                            <div className="tw-float-right tw-flex tw-items-center">
-                                <ReactDatePicker selected={new Date()} dateFormat="dd, MMM yyyy" />
-                                <p className="tw-m-0 tw-mr-2">TO</p>
-                                <ReactDatePicker selected={new Date()} dateFormat="dd, MMM yyyy" />
-                                <Unless condition={type === 'list'}>
+                            <When condition={type !== 'list'}>
+                                <div className="tw-float-right tw-flex tw-items-center">
+                                    <ReactDatePicker selected={startDate} onChange={date => setStartDate(date)} dateFormat="dd, MMM yyyy" />
+                                    <p className="tw-m-0 tw-mr-2">TO</p>
+                                    <ReactDatePicker selected={endDate} onChange={date => setEndDate(date)} dateFormat="dd, MMM yyyy" />
                                     <Button
                                         color="success"
                                         className="tw-flex tw-justify-center tw-items-center tw-gap-2"
                                     >
                                         <AiFillPrinter /> Print
                                     </Button>
-                                </Unless>
-                            </div>
+                                </div>
+                            </When>
                         </Col>
                     </Row>
                     <Row>
@@ -74,10 +78,10 @@ const Inventory = () => {
                                 <ManageListInventory />
                             </When>
                             <When condition={type === 'add'}>
-                                <ManageShopExpenses />
+                                <ManageAddInventory startDate={startDate} endDate={endDate} />
                             </When>
                             <When condition={type === 'consume'}>
-                                <ManageSalaries />
+                                <ManageConsumeInventory startDate={startDate} endDate={endDate} />
                             </When>
                         </Col>
                     </Row>

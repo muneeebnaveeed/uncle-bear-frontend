@@ -1,22 +1,15 @@
-import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
-import { connect } from 'react-redux';
+import React, { Component, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 
-class Logout extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {};
-    }
+const Logout = () => {
+    const history = useHistory();
 
-    componentDidMount() {}
+    useEffect(() => {
+        localStorage.clear();
+        history.replace('/');
+    }, []);
 
-    render() {
-        return (
-            <>
-                <h1>&nbsp;</h1>
-            </>
-        );
-    }
-}
+    return <h1 className="tw-text-xl tw-font-bold tw-m-3">Logging out...</h1>;
+};
 
-export default withRouter(connect(null, null)(Logout));
+export default Logout;

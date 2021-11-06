@@ -18,64 +18,59 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { When } from 'react-if';
 import Creatable from 'react-select/creatable';
 import {
-    setShopExpensesData,
-    setShopExpensesVisibility,
+    setAddInventoryData,
+    setAddInventoryVisibility,
     setShopsData,
     setShopsVisibility,
 } from '../../../store/actions';
 import SpinnerOverlay from '../../../components/Common/SpinnerOverlay';
 import { post, patch, get } from '../../../helpers';
 import useAlert from '../../../components/Common/useAlert';
+import { quantity } from 'chartist';
 
-const CreateShopExpense = () => {
+const CreateAddInventory = () => {
     const state = useSelector((s) => s);
-    const shopExpensesState = state.modals.shopExpenses;
+    const addInventoriesState = state.modals.addInventories;
     const dispatch = useDispatch();
 
-    const expenseNameRef = useRef();
+    const productNameRef = useRef();
 
     const queryClient = useQueryClient();
     const alert = useAlert();
 
-    const postMutation = useMutation(({ payload, shop }) => post('/shop-expenses', payload, {}, { shop }), {
+    const mutation = useMutation(({ payload, shop }) => post('/inventories', payload, {}, { shop }), {
         onSuccess: async () => {
-            await queryClient.invalidateQueries('all-shop-expenses');
-            dispatch(setShopExpensesVisibility(false));
+            await queryClient.invalidateQueries('all-add-inventory-transactions');
+            dispatch(setAddInventoryVisibility(false));
         },
         onError: (err) => {
-            alert.showAlert({ color: 'danger', heading: 'Unable to add shop expense', err });
+            alert.showAlert({ color: 'danger', heading: 'Unable to add inventory', err });
         },
     });
 
-    const patchMutation = useMutation(
-        ({ payload, shop }) => patch(`/shop-expenses/id/${shopExpensesState.data._id}`, payload, {}, { shop }),
-        {
-            onSuccess: async () => {
-                await queryClient.invalidateQueries('all-shop-expenses');
-                dispatch(setShopExpensesVisibility(false));
-            },
-            onError: (err) => {
-                alert.showAlert({ color: 'danger', heading: 'Unable to edit shop expense', err });
-            },
-        }
-    );
-
-    const mutation = useMemo(
-        () => (shopExpensesState.data._id ? patchMutation : postMutation),
-        [patchMutation, postMutation, shopExpensesState.data._id]
-    );
-
     const toggle = useCallback(() => {
-        if (!mutation.isLoading) dispatch(setShopExpensesVisibility(false));
+        if (!mutation.isLoading) dispatch(setAddInventoryVisibility(false));
     }, [dispatch, mutation.isLoading]);
 
     const formik = useFormik({
-        initialValues: { expenseName: '', price: '', detail: '', shop: null },
+        initialValues: { item: '', quantity: '', shop: null },
         validateOnBlur: false,
         validateOnChange: false,
         validateOnMount: false,
+        validate: (values) => {
+            let errors = {};
+            if (values.quantity === 0) {
+                const msg = 'Quantity cannot be zero';
+                errors.quantity = msg;
+                alert.showAlert({ color: 'danger', heading: 'Unable to add inventory', err: { response: { data: { data: msg } }} });
+
+            }
+            return errors;
+        },
         onSubmit: (values) => {
-            mutation.mutate({ payload: values, shop: values.shop?._id });
+            const { type } = addInventoriesState.data;
+            const quantity = type === 'add' ? values.quantity : -values.quantity;
+            mutation.mutate({ payload: { ...values, quantity }, shop: values.shop?._id });
         },
     });
 
@@ -86,7 +81,7 @@ const CreateShopExpense = () => {
             enabled: false,
             onSuccess: (data) => {
                 if (!formik.values.shop) {
-                    const { createdShop } = shopExpensesState.data;
+                    const { createdShop } = addInventoriesState.data;
                     if (!createdShop && data.docs.length) formik.setFieldValue('shop', data.docs[0]);
                     else if (createdShop)
                         formik.setFieldValue(
@@ -102,27 +97,27 @@ const CreateShopExpense = () => {
     );
 
     const handleOpened = () => {
-        expenseNameRef.current.focus();
+        productNameRef.current.focus();
         shops.refetch();
 
-        if (shopExpensesState.data.expenseName) formik.setFieldValue('expenseName', shopExpensesState.data.expenseName);
-        if (shopExpensesState.data.price) formik.setFieldValue('price', shopExpensesState.data.price);
-        if (shopExpensesState.data.detail) formik.setFieldValue('detail', shopExpensesState.data.detail);
+        if (addInventoriesState.data.item) formik.setFieldValue('item', addInventoriesState.data.item);
+        if (addInventoriesState.data.quantity) formik.setFieldValue('quantity', addInventoriesState.data.quantity);
+        if (addInventoriesState.data.description) formik.setFieldValue('description', addInventoriesState.data.description);
 
-        if (shopExpensesState.data.createdShop && shops.data) {
-            const shop = shops.data.docs.find((s) => s._id === shopExpensesState.data.createdShop._id);
+        if (addInventoriesState.data.createdShop && shops.data) {
+            const shop = shops.data.docs.find((s) => s._id === addInventoriesState.data.createdShop._id);
             if (shop) formik.setFieldValue('shop', shop);
         } else if (state.globals.shop) formik.setFieldValue('shop', state.globals.shop);
     };
 
     const handleClosed = () => {
         formik.resetForm();
-        dispatch(setShopExpensesData({}));
+        dispatch(setAddInventoryData({}));
     };
 
     return (
         <Modal
-            isOpen={shopExpensesState.visible}
+            isOpen={addInventoriesState.visible}
             toggle={toggle}
             onOpened={handleOpened}
             onClosed={handleClosed}
@@ -132,29 +127,29 @@ const CreateShopExpense = () => {
                 <SpinnerOverlay />
             </When>
 
-            <ModalHeader toggle={toggle}>{shopExpensesState.data._id ? 'Edit' : 'Add'} Shop Expense</ModalHeader>
+            <ModalHeader toggle={toggle}>{addInventoriesState.data._id ? 'Edit' : addInventoriesState.data.type === 'add' ? 'Add' : 'Consume'} Inventory</ModalHeader>
             <ModalBody>
                 {alert.renderAlert()}
                 <FormGroup className="form-required">
-                    <Label>Expense</Label>
+                    <Label>Item</Label>
                     <Input
-                        innerRef={expenseNameRef}
+                        innerRef={productNameRef}
                         type="text"
-                        name="expenseName"
-                        value={formik.values.expenseName}
+                        name="item"
+                        value={formik.values.item}
                         onChange={formik.handleChange}
                     />
                 </FormGroup>
                 <FormGroup className="form-required">
-                    <Label>Price</Label>
-                    <Input type="number" name="price" value={formik.values.price} onChange={formik.handleChange} />
+                    <Label>Quantity</Label>
+                    <Input type="number" name="quantity" value={formik.values.quantity} onChange={formik.handleChange} />
                 </FormGroup>
                 <FormGroup>
                     <Label>Description</Label>
                     <Input
                         type="textarea"
-                        name="detail"
-                        value={formik.values.detail}
+                        name="description"
+                        value={formik.values.description}
                         onChange={formik.handleChange}
                         className="tw-resize-y tw-min-h-[80px] tw-max-h-[120px]"
                     />
@@ -191,4 +186,4 @@ const CreateShopExpense = () => {
     );
 };
 
-export default CreateShopExpense;
+export default CreateAddInventory;

@@ -28,6 +28,7 @@ import CreateShopExpense from './pages/_/expenses/CreateShopExpense';
 import CreateProductGroup from './pages/_/products/CreateProductGroup';
 import CreateSalary from './pages/_/expenses/CreateSalary';
 import CreateProduct from './pages/_/products/CreateProduct';
+import CreateAddInventory from './pages/_/inventory/CreateAddInventory';
 // Activating fake backend
 fakeBackend();
 
@@ -70,6 +71,7 @@ class App extends Component {
                 <CreateShopExpense />
                 <CreateProductGroup />
                 <CreateSalary />
+                <CreateAddInventory />
 
                 <CreateProduct />
                 <Router>
@@ -90,7 +92,7 @@ class App extends Component {
                                 layout={Layout}
                                 component={route.component}
                                 key={idx}
-                                isAuthProtected={false}
+                                isAuthProtected
                             />
                         ))}
                     </Switch>

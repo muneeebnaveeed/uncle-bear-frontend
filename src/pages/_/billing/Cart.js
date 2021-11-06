@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Button, ButtonGroup, Card, CardBody, Col, FormGroup, Input, Label, Row, Table } from 'reactstrap';
+import { Button, ButtonGroup, Card, CardBody, Col, FormGroup, Input, Label, Row, Spinner, Table } from 'reactstrap';
 import { When, Then, Else, If } from 'react-if';
 import { batch, useDispatch, useSelector } from 'react-redux';
 import { useDebouncedValue } from 'rooks';
@@ -14,6 +14,7 @@ import EmptyTableRow from '../../../components/Common/EmptyTableRow';
 import FormatNumber from '../../../components/Common/FormatNumber';
 
 const Cart = ({
+    type,
     products,
     subtotal,
     discount,
@@ -24,6 +25,10 @@ const Cart = ({
     onChangeDiscount,
     balance,
     change,
+    isSaving,
+    onSave,
+    children,
+    deductionFromBalance,
 }) => {
     const state = useSelector((s) => s);
     const dispatch = useDispatch();
@@ -62,10 +67,10 @@ const Cart = ({
                                                         <td className="tw-align-middle">{index + 1}</td>
                                                         <td className="tw-align-middle">{e.name}</td>
                                                         <td className="tw-align-middle">
-                                                            {`${e.qty}x`} <FormatNumber number={e.salePrice} />
+                                                            {`${e.qty}x`} <FormatNumber number={e?.salePrice} />
                                                         </td>
                                                         <td className="tw-align-middle">
-                                                            <FormatNumber number={e.qty * e.salePrice} />
+                                                            <FormatNumber number={e.qty * e?.salePrice} />
                                                         </td>
                                                         <td className="tw-align-middle">
                                                             <ButtonGroup>
@@ -105,10 +110,18 @@ const Cart = ({
                         </Col>
                         <When condition={products.length > 0}>
                             <Col xl={12} className="tw-flex tw-items-center tw-justify-between tw-my-2">
-                                <FormGroup className="form-required">
-                                    <Label>Discount (%)</Label>
-                                    <Input type="number" value={discount} onChange={onChangeDiscount} />
-                                </FormGroup>
+                                <div>
+                                    <FormGroup className="form-required">
+                                        <Label>Discount (%)</Label>
+                                        <Input
+                                            type="number"
+                                            value={discount}
+                                            onChange={type === 'refund' ? null : onChangeDiscount}
+                                            disabled={type === 'refund'}
+                                        />
+                                    </FormGroup>
+                                    {children}
+                                </div>
                                 <div className="tw-float-right">
                                     <div className="page-title-box d-flex align-items-center tw-gap-2 pb-0 tw-justify-end">
                                         <h4 className="mb-0">Subtotal</h4>
@@ -118,6 +131,12 @@ const Cart = ({
                                         <h4 className="mb-0">Total</h4>
                                         <FormatNumber number={total} />
                                     </div>
+                                    <When condition={type === 'vip'}>
+                                        <div className="page-title-box d-flex align-items-center tw-gap-2 pb-0 tw-justify-end">
+                                            <h4 className="mb-0">Deduction from balance</h4>
+                                            <FormatNumber number={deductionFromBalance} />
+                                        </div>
+                                    </When>
                                     <When condition={balance >= 0}>
                                         <div className="page-title-box d-flex align-items-center tw-gap-2 pb-0 tw-justify-end">
                                             <h4 className="mb-0">Balance</h4>
@@ -143,8 +162,13 @@ const Cart = ({
                             color="info"
                             size="lg"
                             className="tw-flex tw-items-center tw-justify-center tw-gap-2"
+                            onClick={onSave}
                         >
-                            <AiFillSave /> Save
+                            <AiFillSave />
+                            <If condition={isSaving}>
+                                <Then>Saving...</Then>
+                                <Else>Save</Else>
+                            </If>
                         </Button>
                     </Col>
                 </Row>

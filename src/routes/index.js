@@ -108,6 +108,7 @@ import Expenses from '../pages/_/expenses';
 import Products from '../pages/_/products';
 import Inventory from '../pages/_/inventory';
 import Billing from '../pages/_/billing';
+import Users from '../pages/_/users';
 
 const authProtectedRoutes = [
     // Kanban Board
@@ -200,18 +201,20 @@ const authProtectedRoutes = [
     { path: '/employees', component: Employees },
     { path: '/expenses', component: Expenses },
     { path: '/products', component: Products },
+    { path: '/users', component: Users },
+
     { path: '/inventory', component: Inventory },
     { path: '/billing', component: Billing },
 
     // this route should be at the end of all other routes
-    { path: '/', exact: true, component: () => <Redirect to="/dashboard" /> },
+    { path: '/', exact: true, component: () => <Redirect to="/billing" /> },
 ];
 
 const publicRoutes = [
     { path: '/logout', component: Logout },
     { path: '/login', component: Login },
     { path: '/forgot-password', component: ForgetPwd },
-    { path: '/register', component: Register },
+    { path: '/sign-up', component: Register },
     { path: '/auth-lock-screen', component: AuthLockScreen },
 
     // Authentication Inner

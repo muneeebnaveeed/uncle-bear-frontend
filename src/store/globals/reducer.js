@@ -1,7 +1,8 @@
-import { SET_SHOP } from './actionTypes';
+import { SET_SHOP, SET_USER } from './actionTypes';
 
 const INIT_STATE = {
     shop: null,
+    user: null,
 };
 
 const Layout = (state = INIT_STATE, action) => {
@@ -10,6 +11,11 @@ const Layout = (state = INIT_STATE, action) => {
             return {
                 ...state,
                 shop: action.payload,
+            };
+        case SET_USER:
+            return {
+                ...state,
+                user: action.payload,
             };
         default:
             return state;

@@ -8,7 +8,8 @@ import FormatNumber from '../../../components/Common/FormatNumber';
 import { get, useQuery } from '../../../helpers';
 
 const settings = {
-    dots: true,
+    dots: false,
+    arrows: false,
     speed: 500,
     slidesToShow: 6,
     slidesToScroll: 6,
@@ -18,12 +19,12 @@ const settings = {
     centerPadding: '0',
 };
 
-const ProductCard = ({ onClick, name, salePrice }) => (
+const ProductCard = ({ onClick, name, salePrice, color }) => (
     <div onClick={onClick}>
-        <Card className="mb-0 tw-cursor-pointer hover:tw-bg-gray-200 tw-transition tw-mr-2">
+        <Card className="mb-0 tw-cursor-pointer hover:tw-bg-gray-200 tw-transition tw-mr-2" style={{ backgroundColor: color }}>
             <CardBody>
-                <h3>{name}</h3>
-                <p className="mb-0">
+                <h3 className="tw-text-black tw-font-bold">{name}</h3>
+                <p className="mb-0 tw-text-black tw-font-bold">
                     <FormatNumber number={salePrice} />
                 </p>
             </CardBody>
@@ -33,10 +34,10 @@ const ProductCard = ({ onClick, name, salePrice }) => (
 
 const GroupedProducts = ({ onAdd }) => {
     const shop = useSelector((s) => s.globals.shop);
-    const products = useQuery(['grouped-products', shop], () => get('/products/groups'));
+    const products = useQuery(['grouped-products', shop], () => get('/products/groups', { sort: { createdAt: -1 } }));
 
     return (
-        <div className="tw-max-h-[720px] tw-bg-gray-200 tw-overflow-y-auto">
+        <div className="tw-max-h-[655px] tw-bg-gray-200 tw-overflow-y-auto">
             <When condition={products.isLoading}>
                 <ListGroup>
                     <ListGroupItem>Loading...</ListGroupItem>
@@ -56,12 +57,13 @@ const GroupedProducts = ({ onAdd }) => {
                         {products.data?.map((productGroup, i1) => (
                             <div
                                 className="min-w-full tw-p-4"
-                                style={{ backgroundColor: productGroup.group.color }}
+                                // style={{ backgroundColor: productGroup.group.color }}
                                 key={`grouped-product-${i1}`}
                             >
                                 <Slider {...settings}>
                                     {productGroup.products.map((product, i2) => (
                                         <ProductCard
+                                            color={productGroup.group.color}
                                             key={`product-${i2}`}
                                             onClick={() => onAdd(product)}
                                             {...product}

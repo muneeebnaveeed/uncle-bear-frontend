@@ -85,13 +85,12 @@ class SidebarContent extends Component {
                     <ul className="metismenu list-unstyled" id="side-menu">
                         <li className="menu-title">{this.props.t('Menu')}</li>
 
-                        <li>
+                        {/* <li>
                             <Link to="/dashboard" className="waves-effect">
                                 <i className="ri-dashboard-line" />
-                                <span className="badge badge-pill badge-success float-right">3</span>
                                 <span className="ml-1">{this.props.t('Dashboard')}</span>
                             </Link>
-                        </li>
+                        </li> */}
 
                         <li>
                             <Link to="/#" className="has-arrow waves-effect">
@@ -114,6 +113,9 @@ class SidebarContent extends Component {
                                 <li>
                                     <Link to="products">Products</Link>
                                 </li>
+                                <li>
+                                    <Link to="users">Users</Link>
+                                </li>
                             </ul>
                         </li>
 
@@ -134,11 +136,11 @@ class SidebarContent extends Component {
                         <li>
                             <Link to="apps-chat" className=" waves-effect">
                                 <i className="ri-chat-1-line" />
-                                <span className="ml-1">{this.props.t('Chat')}</span>
+                                <span className="ml-1">Audit</span>
                             </Link>
                         </li>
 
-                        <li>
+                        {/* <li>
                             <Link to="/#" className="has-arrow waves-effect">
                                 <i className="ri-store-2-line" />
                                 <span className="ml-1">{this.props.t('Ecommerce')}</span>
@@ -455,7 +457,7 @@ class SidebarContent extends Component {
                                     </ul>
                                 </li>
                             </ul>
-                        </li>
+                        </li> */}
                     </ul>
                 </div>
             </>

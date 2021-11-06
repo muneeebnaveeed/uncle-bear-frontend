@@ -1,7 +1,16 @@
 import _ from 'lodash';
 
-class BillingFactory {
-    constructor({ products, setProducts, discount, setDiscount, deductionFromBalance, setDeductionFromBalance }) {
+class RefundFactory {
+    constructor({
+        initialProducts = [],
+        products,
+        setProducts,
+        discount,
+        setDiscount,
+        deductionFromBalance,
+        setDeductionFromBalance,
+    }) {
+        this.initialProducts = initialProducts;
         this.products = products;
         this.setProducts = setProducts;
 
@@ -14,31 +23,24 @@ class BillingFactory {
         this.setDeductionFromBalance = setDeductionFromBalance;
     }
 
+    setInitialProducts = (products) => {
+        this.initialProducts = [...products];
+    };
+
     handleIncrease = (name) => {
-        const updatedProducts = [...this.products];
+        const updatedProducts = _.cloneDeep([...this.products]);
         const index = updatedProducts.findIndex((e) => e.name === name);
 
         if (index === -1) return;
 
         updatedProducts[index].qty++;
 
-        this.products = updatedProducts;
-        this.setProducts(updatedProducts);
-    };
+        const initialProduct = this.initialProducts.find((e) => e._id === updatedProducts[index]._id);
+        console.log(initialProduct?.qty, updatedProducts[index].qty);
+        if (initialProduct?.qty < updatedProducts[index].qty) return;
 
-    handleAdd = (product) => {
-        const existingProduct = this.products.find((e) => e.name === product.name);
-
-        if (existingProduct) {
-            this.handleIncrease(existingProduct.name);
-            return;
-        }
-
-        const updatedProducts = [...this.products];
-        updatedProducts.push({ ...product, qty: 1 });
-
-        this.products = updatedProducts;
-        this.setProducts(updatedProducts);
+        this.products = _.cloneDeep([...updatedProducts]);
+        this.setProducts(_.cloneDeep([...updatedProducts]));
     };
 
     handleDelete = (name) => {
@@ -115,4 +117,4 @@ class BillingFactory {
     };
 }
 
-export default BillingFactory;
+export default RefundFactory;

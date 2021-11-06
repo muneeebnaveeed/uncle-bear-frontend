@@ -22,7 +22,7 @@ const ManageProducts = () => {
     const [debouncedSearch, updateDebouncedSearch] = useDebouncedValue(search, 500);
 
     const query = useQuery(['all-products', debouncedSearch, state.globals.shop], () =>
-        get('/products', { page: 1, limit: 5, sort: { name: 1 }, search: debouncedSearch })
+        get('/products', { page: 1, limit: 10000, sort: { name: 1 }, search: debouncedSearch })
     );
 
     const deleteMutation = useMutation((id) => del(`/products/id/${id}`), {
