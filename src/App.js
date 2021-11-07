@@ -9,7 +9,6 @@ import AppRoute from './routes/route';
 
 // layouts
 import VerticalLayout from './components/VerticalLayout';
-import HorizontalLayout from './components/HorizontalLayout';
 import NonAuthLayout from './components/NonAuthLayout';
 
 // Import scss
@@ -18,8 +17,6 @@ import './theme.scss';
 import './assets/react-datepicker.css';
 import './assets/scss/custom/print.css';
 
-// Fake backend
-import fakeBackend from './helpers/AuthType/fakeBackend';
 import CreateNormalCustomer from './pages/_/customers/CreateNormalCustomer';
 import CreateShop from './pages/_/shops/CreateShop';
 import CreateVIPCustomer from './pages/_/customers/CreateVIPCustomer';
@@ -31,8 +28,6 @@ import CreateSalary from './pages/_/expenses/CreateSalary';
 import CreateProduct from './pages/_/products/CreateProduct';
 import CreateAddInventory from './pages/_/inventory/CreateAddInventory';
 import AcceptUser from './pages/_/users/AcceptUser';
-// Activating fake backend
-fakeBackend();
 
 const queryClient = new QueryClient();
 
@@ -40,29 +35,9 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {};
-        this.getLayout = this.getLayout.bind(this);
     }
 
-    /**
-     * Returns the layout
-     */
-    getLayout = () => {
-        let layoutCls = VerticalLayout;
-
-        switch (this.props.layout.layoutType) {
-            case 'horizontal':
-                layoutCls = HorizontalLayout;
-                break;
-            default:
-                layoutCls = VerticalLayout;
-                break;
-        }
-        return layoutCls;
-    };
-
     render() {
-        const Layout = this.getLayout();
-
         return (
             <QueryClientProvider client={queryClient}>
                 <CreateShop />
@@ -92,7 +67,7 @@ class App extends Component {
                         {authProtectedRoutes.map((route, idx) => (
                             <AppRoute
                                 path={route.path}
-                                layout={Layout}
+                                layout={VerticalLayout}
                                 component={route.component}
                                 key={idx}
                                 isAuthProtected
@@ -105,8 +80,4 @@ class App extends Component {
     }
 }
 
-const mapStateToProps = (state) => ({
-    layout: state.Layout,
-});
-
-export default connect(mapStateToProps, null)(App);
+export default App;

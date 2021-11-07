@@ -1,9 +1,6 @@
 import React, { Component, useState } from 'react';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 
-// i18n
-import { withNamespaces } from 'react-i18next';
-
 // users
 import Avatar from 'react-avatar';
 import { useSelector } from 'react-redux';

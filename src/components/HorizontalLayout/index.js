@@ -1,68 +1,37 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 
-import {
-  changeLayout,
-  changeTopbarTheme,
-  toggleRightSidebar,
-  changeLayoutWidth,
-} from "../../store/actions";
+import { changeLayout, changeTopbarTheme, toggleRightSidebar, changeLayoutWidth } from '../../store/actions';
 
 // Other Layout related Component
-import Navbar from "./Navbar";
-import Header from "./Header";
-import Footer from "./Footer";
-import Rightbar from "../CommonForBoth/Rightbar";
+import Navbar from './Navbar';
+import Header from './Header';
+import Footer from './Footer';
+import Rightbar from '../CommonForBoth/Rightbar';
 
 class Layout extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isMenuOpened: false
+      isMenuOpened: false,
     };
     this.toggleRightSidebar = this.toggleRightSidebar.bind(this);
   }
 
   /**
-  * Open/close right sidebar
-  */
+   * Open/close right sidebar
+   */
   toggleRightSidebar() {
     this.props.toggleRightSidebar();
   }
 
-  componentDidUpdate(prevProps) {
-    if (prevProps !== this.props) {
-      if(this.props.isPreloader === true)
-        {
-          document.getElementById('preloader').style.display = "block";
-          document.getElementById('status').style.display = "block";
-
-          setTimeout(function(){ 
-
-          document.getElementById('preloader').style.display = "none";
-          document.getElementById('status').style.display = "none";
-
-          }, 2500);
-        }
-        else
-        {
-          document.getElementById('preloader').style.display = "none";
-          document.getElementById('status').style.display = "none";
-        }
-    }
-}
-
   componentDidMount() {
-
     // Scrollto 0,0
     window.scrollTo(0, 0);
 
     const title = this.props.location.pathname;
-    let currentage = title.charAt(1).toUpperCase() + title.slice(2);
-
-    document.title =
-      currentage + " | Nazox - Responsive Bootstrap 4 Admin Dashboard";
+    const currentage = title.charAt(1).toUpperCase() + title.slice(2);
 
     this.props.changeLayout('horizontal');
     if (this.props.topbarTheme) {
@@ -79,23 +48,16 @@ class Layout extends Component {
   /**
    * Opens the menu - mobile
    */
-  openMenu = e => {
+  openMenu = (e) => {
     this.setState({ isMenuOpened: !this.state.isMenuOpened });
   };
+
   render() {
     return (
-      <React.Fragment>
-
-        <div id="preloader">
-            <div id="status">
-                <div className="spinner">
-                    <i className="ri-loader-line spin-icon"></i>
-                </div>
-            </div>
-        </div>
-
+      <>
         <div id="layout-wrapper">
-          <Header theme={this.props.topbarTheme}
+          <Header
+            theme={this.props.topbarTheme}
             isMenuOpened={this.state.isMenuOpened}
             toggleRightSidebar={this.toggleRightSidebar}
             openLeftMenuCallBack={this.openMenu}
@@ -107,15 +69,16 @@ class Layout extends Component {
           </div>
         </div>
         <Rightbar />
-      </React.Fragment>
+      </>
     );
   }
 }
-const mapStatetoProps = state => {
-  return {
-    ...state.Layout
-  };
-};
+const mapStatetoProps = (state) => ({
+  ...state.Layout,
+});
 export default connect(mapStatetoProps, {
-  changeTopbarTheme, toggleRightSidebar, changeLayout, changeLayoutWidth
+  changeTopbarTheme,
+  toggleRightSidebar,
+  changeLayout,
+  changeLayoutWidth,
 })(withRouter(Layout));

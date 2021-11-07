@@ -5,8 +5,6 @@ import { Button } from 'reactstrap';
 
 import { Link } from 'react-router-dom';
 
-// Import menuDropdown
-import { withNamespaces } from 'react-i18next';
 import { When } from 'react-if';
 import ProfileMenu from '../CommonForBoth/TopbarDropdown/ProfileMenu';
 
@@ -122,4 +120,4 @@ const mapStatetoProps = (state) => {
     return { layoutType, user: state.globals.user };
 };
 
-export default connect(mapStatetoProps, { toggleRightSidebar })(withNamespaces()(Header));
+export default connect(mapStatetoProps, { toggleRightSidebar })(Header);
