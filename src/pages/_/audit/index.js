@@ -59,9 +59,9 @@ const Audit = () => {
                                     onChange={(date) => setEndDate(date)}
                                     dateFormat="dd, MMM yyyy"
                                 />
-                                <Button color="success" className="tw-flex tw-justify-center tw-items-center tw-gap-2">
+                                {/* <Button color="success" className="tw-flex tw-justify-center tw-items-center tw-gap-2">
                                     <AiFillPrinter /> Print
-                                </Button>
+                                </Button> */}
                             </div>
                         </Col>
                     </Row>

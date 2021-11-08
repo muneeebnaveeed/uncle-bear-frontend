@@ -133,12 +133,12 @@ const VIPBill = () => {
                 onIncrease={billingFactory.handleIncrease}
                 onDecrease={billingFactory.handleDecrease}
                 onDelete={billingFactory.handleDelete}
-                subtotal={billingFactory.getSubtotal()}
                 discount={billingFactory.discount}
                 onChangeDiscount={billingFactory.handleChangeDiscount}
+                subtotal={subtotal}
                 total={total}
                 balance={billingFactory.balance}
-                change={subtotal}
+                change={billingFactory.getChange()}
                 deductionFromBalance={billingFactory.getDeductionFromBalance()}
                 isSaving={mutation.isLoading}
                 onSave={handleSave}

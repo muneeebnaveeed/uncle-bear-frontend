@@ -3,12 +3,14 @@ import { Button, ButtonGroup, Card, CardBody, Col, Container, Input, Row, Table 
 
 // Import Breadcrumb
 import { If, Then, Else, When } from 'react-if';
-import { AiFillPrinter } from 'react-icons/ai';
+import { AiFillPrinter, AiOutlineExport } from 'react-icons/ai';
 import ReactDatePicker from 'react-datepicker';
+import { useMutation } from 'react-query';
 import Breadcrumbs from '../../../components/Common/Breadcrumb';
 import ManageMaterialExpenses from './ManageMaterialExpenses';
 import ManageShopExpenses from './ManageShopExpenses';
 import ManageSalaries from './ManageSalaries';
+import { api, get } from '../../../helpers';
 
 const breadcrumbItems = [
     { title: 'Manage', link: '#' },
@@ -17,6 +19,21 @@ const breadcrumbItems = [
 
 const Expenses = () => {
     const [type, setType] = useState('material');
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date());
+
+    const exportMutation = useMutation((endpoint) =>
+        get(`/${endpoint}/get-csv`, { page: 1, limit: 10000, startDate, endDate })
+    );
+
+    const handleExport = () => {
+        let endpoint = 'raw-material-expenses';
+
+        if (type === 'shop') endpoint = 'shop-expenses';
+        else if (type === 'salary') endpoint = 'salaries';
+
+        exportMutation.mutate(endpoint);
+    };
 
     return (
         <>
@@ -54,11 +71,23 @@ const Expenses = () => {
                         </Col>
                         <Col xl={6} md={12}>
                             <div className="tw-float-right tw-flex tw-items-center">
-                                <ReactDatePicker selected={new Date()} dateFormat="dd, MMM yyyy" />
+                                <ReactDatePicker
+                                    selected={startDate}
+                                    onChange={(date) => setStartDate(date)}
+                                    dateFormat="dd, MMM yyyy"
+                                />
                                 <p className="tw-m-0 tw-mr-2">TO</p>
-                                <ReactDatePicker selected={new Date()} dateFormat="dd, MMM yyyy" />
-                                <Button color="success" className="tw-flex tw-justify-center tw-items-center tw-gap-2">
-                                    <AiFillPrinter /> Print
+                                <ReactDatePicker
+                                    selected={endDate}
+                                    onChange={(date) => setEndDate(date)}
+                                    dateFormat="dd, MMM yyyy"
+                                />
+                                <Button
+                                    color="success"
+                                    className="tw-flex tw-justify-center tw-items-center tw-gap-2"
+                                    onClick={handleExport}
+                                >
+                                    <AiOutlineExport /> Export
                                 </Button>
                             </div>
                         </Col>

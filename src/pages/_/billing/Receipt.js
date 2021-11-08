@@ -18,7 +18,6 @@ class Receipt extends React.PureComponent {
     render() {
         const { shop, billId, customer, products, subtotal, total } = this.props;
         const discount = this.props.discount ? Number(this.props.discount) : 0;
-        console.log(customer);
         return (
             <div
                 className={`tw-w-full tw-h-full tw-flex tw-justify-center tw-bg-gray-50 ${this.props.className || ''}`}

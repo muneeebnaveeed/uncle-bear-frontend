@@ -101,10 +101,12 @@ class BillingFactory {
     getChange = () => {
         // console.log (this.getDeductionFromBalance());
         const total = this.getTotal();
-        const raw = total - this.getDeductionFromBalance();
-        if (raw <= this.balance) return this.balance - raw + (this.getDeductionFromBalance() - this.balance);
+        const raw = this.getDeductionFromBalance();
 
-        return total - this.balance;
+        const vipNeeded = Number(raw * total);
+        const vipConsumed = vipNeeded <= this.balance ? vipNeeded : this.balance;
+        const remainingPay = total - vipConsumed;
+        return remainingPay;
     };
 
     resetBill = () => {

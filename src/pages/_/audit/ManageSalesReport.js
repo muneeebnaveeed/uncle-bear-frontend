@@ -23,8 +23,6 @@ const ManageSalesReport = ({ startDate, endDate }) => {
         { onError: (err) => alert.showAlert({ heading: 'Unable to generate sales report', err }) }
     );
 
-    const totalEarning = query.data?.prices.totalSellPrice - query.data?.prices.totalCostPrice;
-
     return (
         <>
             <Card className="tw-min-h-[200px]">
