@@ -14,14 +14,17 @@ const settings = {
     slidesToShow: 6,
     slidesToScroll: 6,
     variableWidth: true,
-    adaptiveHeight: true,
+    adaptiveHeight: false,
     infinite: false,
     centerPadding: '0',
 };
 
 const ProductCard = ({ onClick, name, salePrice, color }) => (
     <div onClick={onClick}>
-        <Card className="mb-0 tw-cursor-pointer hover:tw-bg-gray-200 tw-transition tw-mr-2" style={{ backgroundColor: color }}>
+        <Card
+            className="mb-0 tw-cursor-pointer hover:tw-bg-gray-200 tw-transition tw-mr-2"
+            style={{ backgroundColor: color }}
+        >
             <CardBody>
                 <h3 className="tw-text-black tw-font-bold">{name}</h3>
                 <p className="mb-0 tw-text-black tw-font-bold">

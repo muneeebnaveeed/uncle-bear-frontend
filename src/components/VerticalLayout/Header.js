@@ -69,11 +69,13 @@ class Header extends Component {
                     <div className="navbar-header">
                         <div className="d-flex">
                             <div className="navbar-brand-box d-flex tw-justify-center tw-items-center">
-                                <Link to="#" className="logo logo-light">
-                                    <h1 className="tw-text-white tw-font-bold tw-mt-3 tw-text-xl tw-text-center tw-my-auto m-0">
-                                        Uncle Bear's
-                                    </h1>
-                                </Link>
+                                {this.props.type === 'default' ? (
+                                    <Link to="#" className="logo logo-light">
+                                        <h1 className="tw-text-white tw-font-bold tw-mt-3 tw-text-xl tw-text-center tw-my-auto m-0">
+                                            Uncle Bear's
+                                        </h1>
+                                    </Link>
+                                ) : null}
                             </div>
 
                             <Button

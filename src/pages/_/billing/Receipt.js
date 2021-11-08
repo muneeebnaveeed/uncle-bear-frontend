@@ -19,10 +19,8 @@ class Receipt extends React.PureComponent {
         const { shop, billId, customer, products, subtotal, total } = this.props;
         const discount = this.props.discount ? Number(this.props.discount) : 0;
         return (
-            <div
-                className={`tw-w-full tw-h-full tw-flex tw-justify-center tw-bg-gray-50 ${this.props.className || ''}`}
-            >
-                <div className="tw-w-[50mm] tw-h-[500mm] tw-bg-gray-100 tw-flex tw-flex-col tw-items-center tw-p-4">
+            <div className={`tw-w-full tw-flex tw-justify-center tw-bg-gray-50 ${this.props.className || ''}`}>
+                <div className="tw-w-[50mm] tw-bg-gray-100 tw-flex tw-flex-col tw-items-center tw-p-4">
                     <div className="tw-w-[40px] tw-h-[40px] rounded-full tw-bg-gray-500 tw-mb-4" />
                     <h4 className="tw-text-[12px] tw-mb-2">
                         <span className="tw-font-bold tw-uppercase">Shop:</span> {shop?.address}

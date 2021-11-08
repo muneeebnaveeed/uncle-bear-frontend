@@ -729,10 +729,6 @@ video {
   height: 30px !important;
 }
 
-.tw-h-\[500mm\] {
-  height: 500mm !important;
-}
-
 .tw-h-\[40px\] {
   height: 40px !important;
 }
@@ -779,6 +775,10 @@ video {
 
 .tw-w-\[100px\] {
   width: 100px !important;
+}
+
+.tw-w-\[200px\] {
+  width: 200px !important;
 }
 
 .tw-w-\[50mm\] {

@@ -70,9 +70,12 @@ class Layout extends Component {
   render() {
     return (
       <>
-                }
         <div id="layout-wrapper">
-          <Header toggleMenuCallback={this.toggleMenuCallback} toggleRightSidebar={this.toggleRightSidebar} />
+          <Header
+            toggleMenuCallback={this.toggleMenuCallback}
+            toggleRightSidebar={this.toggleRightSidebar}
+            type={this.props.leftSideBarType}
+          />
           <Sidebar
             theme={this.props.leftSideBarTheme}
             type={this.props.leftSideBarType}
