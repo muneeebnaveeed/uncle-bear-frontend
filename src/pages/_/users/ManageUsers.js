@@ -163,7 +163,7 @@ const ManageUsers = () => {
                                                                     <Button
                                                                         color="danger"
                                                                         className="tw-min-w-[200px] tw-flex tw-justify-center tw-items-center tw-gap-2"
-                                                                        onClick={() => handleAccept(e._id)}
+                                                                        onClick={() => handleDelete(e._id)}
                                                                     >
                                                                         <AiFillDelete />
                                                                         Delete
