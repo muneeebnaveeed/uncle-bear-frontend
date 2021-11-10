@@ -1,28 +1,26 @@
 import React from 'react';
 import { Else, If, Then, When } from 'react-if';
 import { useSelector } from 'react-redux';
-import Slider from 'react-slick';
 import { Button, Card, CardHeader, ListGroup, ListGroupItem } from 'reactstrap';
 import CardBody from 'reactstrap/lib/CardBody';
+import OwlCarousel from 'react-owl-carousel';
+import cls from 'classnames';
 import FormatNumber from '../../../components/Common/FormatNumber';
 import { get, useQuery } from '../../../helpers';
 
+import 'owl.carousel/dist/assets/owl.carousel.css';
+import 'owl.carousel/dist/assets/owl.theme.default.css';
+
 const settings = {
+    autoWidth: true,
     dots: false,
-    arrows: false,
-    speed: 500,
-    slidesToShow: 6,
-    slidesToScroll: 6,
-    variableWidth: true,
-    adaptiveHeight: false,
-    infinite: false,
-    centerPadding: '0',
+    margin: 15,
 };
 
 const ProductCard = ({ onClick, name, salePrice, color }) => (
     <div onClick={onClick}>
         <Card
-            className="mb-0 tw-cursor-pointer hover:tw-bg-gray-200 tw-transition tw-mr-2"
+            className="mb-0 tw-cursor-pointer hover:tw-bg-gray-200 tw-transition tw-mr-2 tw-w-[200px] tw-mr-0 tw-min-h-[129px]"
             style={{ backgroundColor: color }}
         >
             <CardBody>
@@ -59,11 +57,11 @@ const GroupedProducts = ({ onAdd }) => {
                     <Then>
                         {products.data?.map((productGroup, i1) => (
                             <div
-                                className="min-w-full tw-p-4"
+                                className={cls('min-w-full tw-p-4', { 'tw-pb-0': i1 < products.data?.length - 1 })}
                                 // style={{ backgroundColor: productGroup.group.color }}
                                 key={`grouped-product-${i1}`}
                             >
-                                <Slider {...settings}>
+                                <OwlCarousel {...settings}>
                                     {productGroup.products.map((product, i2) => (
                                         <ProductCard
                                             color={productGroup.group.color}
@@ -72,7 +70,7 @@ const GroupedProducts = ({ onAdd }) => {
                                             {...product}
                                         />
                                     ))}
-                                </Slider>
+                                </OwlCarousel>
                             </div>
                         ))}
                     </Then>
