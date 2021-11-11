@@ -45,18 +45,19 @@ const CreateProductGroup = () => {
     const [showColorPicker, setShowColorPicker] = useState(false);
     const colorPickerRef = useRef();
 
-    useEffect(() => {
-        const checkIfClickedOutside = (e) => {
-            // If the menu is open and the clicked target is not within the menu,
-            // then close the menu
-            if (showColorPicker && colorPickerRef.current && !colorPickerRef.current.contains?.(e.target)) {
-                setShowColorPicker(false);
-            }
-        };
+    // useEffect(() => {
+    //     const checkIfClickedOutside = (e) => {
+    //         // If the menu is open and the clicked target is not within the menu,
+    //         // then close the menu
+    //         if (showColorPicker && colorPickerRef.current && !colorPickerRef.current.contains?.(e.target)) {
+    //             console.log(colorPickerRef.current.contains?.(e.target));
+    //             setShowColorPicker(false);
+    //         }
+    //     };
 
-        if (productGroupsState.visible) document.addEventListener('mousedown', checkIfClickedOutside);
-        else document.removeEventListener('mousedown', checkIfClickedOutside);
-    }, [productGroupsState.visible, showColorPicker]);
+    //     if (productGroupsState.visible) document.addEventListener('mousedown', checkIfClickedOutside);
+    //     else document.removeEventListener('mousedown', checkIfClickedOutside);
+    // }, [productGroupsState.visible, showColorPicker]);
 
     const postMutation = useMutation(({ payload, shop }) => post('/product-groups', payload, {}, { shop }), {
         onSuccess: async () => {
