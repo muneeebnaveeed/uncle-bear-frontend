@@ -18,9 +18,8 @@ import {
 import { useFormik } from 'formik';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { When } from 'react-if';
-import ReactDatePicker from 'react-datepicker';
-import { SketchPicker } from 'react-color';
 import ColorPicker from '@vtaits/react-color-picker';
+import { SketchPicker } from 'react-color';
 import Creatable from 'react-select/creatable';
 import {
     setProductGroupsData,
@@ -44,6 +43,20 @@ const CreateProductGroup = () => {
     const alert = useAlert();
 
     const [showColorPicker, setShowColorPicker] = useState(false);
+    const colorPickerRef = useRef();
+
+    useEffect(() => {
+        const checkIfClickedOutside = (e) => {
+            // If the menu is open and the clicked target is not within the menu,
+            // then close the menu
+            if (showColorPicker && colorPickerRef.current && !colorPickerRef.current.contains?.(e.target)) {
+                setShowColorPicker(false);
+            }
+        };
+
+        if (productGroupsState.visible) document.addEventListener('mousedown', checkIfClickedOutside);
+        else document.removeEventListener('mousedown', checkIfClickedOutside);
+    }, [productGroupsState.visible, showColorPicker]);
 
     const postMutation = useMutation(({ payload, shop }) => post('/product-groups', payload, {}, { shop }), {
         onSuccess: async () => {
@@ -142,8 +155,8 @@ const CreateProductGroup = () => {
         dispatch(setProductGroupsData({}));
     };
 
-    const handleChangeColor = (color) => {
-        formik.setFieldValue('color', color);
+    const handleChangeColor = ({ hex }) => {
+        formik.setFieldValue('color', hex);
         // console.log(color.rgb)
     };
 
@@ -194,11 +207,16 @@ const CreateProductGroup = () => {
                         </InputGroupAddon>
                     </InputGroup>
                     <When condition={showColorPicker}>
-                        <ColorPicker
+                        {/* <ColorPicker
                             saturationHeight={100}
                             saturationWidth={100}
                             value={formik.values.color}
                             onDrag={handleChangeColor}
+                        /> */}
+                        <SketchPicker
+                            ref={colorPickerRef}
+                            color={formik.values.color}
+                            onChangeComplete={handleChangeColor}
                         />
                     </When>
                 </FormGroup>

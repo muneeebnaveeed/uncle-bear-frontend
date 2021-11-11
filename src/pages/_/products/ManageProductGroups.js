@@ -29,7 +29,7 @@ const ManageProductGroups = () => {
 
     const deleteMutation = useMutation((id) => del(`/product-groups/id/${id}`), {
         onSuccess: async () => {
-            alert.showAlert({ color: 'success', heading: 'Product deleted successfully' });
+            alert.showAlert({ color: 'success', heading: 'Product group deleted successfully' });
             await Promise.all([
                 queryClient.invalidateQueries('all-product-groups'),
                 queryClient.invalidateQueries('all-products'),
@@ -117,9 +117,8 @@ const ManageProductGroups = () => {
                                                             className="tw-w-[20px] tw-h-[20px]"
                                                             style={{ backgroundColor: e.color }}
                                                         />
-                                                        <p className="tw-mb-0">{`${e.name}${
-                                                            e.description ? `, ${e.description}` : ''
-                                                        }`}</p>
+                                                        <p className="tw-mb-0">{`${e.name}${e.description ? `, ${e.description}` : ''
+                                                            }`}</p>
                                                     </div>
                                                     <div className="tw-flex tw-gap-2">
                                                         <Button
