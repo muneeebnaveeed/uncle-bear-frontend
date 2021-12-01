@@ -1,7 +1,7 @@
 import axios from 'axios';
 import store from '../store';
 
-export const api = axios.create({ baseURL: 'https://uncle-bear-backend.herokuapp.com' });
+export const api = axios.create({ baseURL: process.env.REACT_APP_BASE_URL });
 
 export const get = (url, params = {}, headers = {}) => api.get(url, { params, headers }).then((res) => res.data);
 export const post = (url, payload, params = {}, headers = {}) =>
