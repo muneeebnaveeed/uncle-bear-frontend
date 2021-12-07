@@ -1,30 +1,23 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 
-// Authentication related pages
-import Login from '../pages/Authentication/Login';
-import Logout from '../pages/Authentication/Logout';
-import Register from '../pages/Authentication/Register';
+const Login = React.lazy(() => import('../pages/Authentication/Login'));
+const Logout = React.lazy(() => import('../pages/Authentication/Logout'));
+const Register = React.lazy(() => import('../pages/Authentication/Register'));
 
-// Dashboard
-import Dashboard from '../pages/Dashboard/index';
-
-// Pages Component
-import Audit from '../pages/_/audit';
-
-import Customers from '../pages/_/customers';
-import Shops from '../pages/_/shops';
-import Employees from '../pages/_/employees';
-import Expenses from '../pages/_/expenses';
-import Products from '../pages/_/products';
-import Inventory from '../pages/_/inventory';
-import Billing from '../pages/_/billing';
-import Users from '../pages/_/users';
+const Audit = React.lazy(() => import('../pages/_/audit'));
+const Customers = React.lazy(() => import('../pages/_/customers'));
+const Shops = React.lazy(() => import('../pages/_/shops'));
+const Employees = React.lazy(() => import('../pages/_/employees'));
+const Expenses = React.lazy(() => import('../pages/_/expenses'));
+const Products = React.lazy(() => import('../pages/_/products'));
+const Inventory = React.lazy(() => import('../pages/_/inventory'));
+const Billing = React.lazy(() => import('../pages/_/billing'));
+const Users = React.lazy(() => import('../pages/_/users'));
 
 const authProtectedRoutes = [
     // chat
     { path: '/audit', component: Audit },
-    { path: '/dashboard', component: Dashboard },
 
     { path: '/customers', component: Customers },
     { path: '/shops', component: Shops },

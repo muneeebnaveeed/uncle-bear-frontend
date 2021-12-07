@@ -1,6 +1,5 @@
-import React, { Component } from 'react';
+import React, { Component, Suspense } from 'react';
 import { Switch, BrowserRouter as Router } from 'react-router-dom';
-import { connect } from 'react-redux';
 
 // Import Routes
 import { QueryClientProvider, QueryClient } from 'react-query';
@@ -12,6 +11,7 @@ import VerticalLayout from './components/VerticalLayout';
 import NonAuthLayout from './components/NonAuthLayout';
 
 // Import scss
+import './index.css';
 import './assets/app.css';
 import './theme.scss';
 import './assets/react-datepicker.css';
@@ -39,43 +39,45 @@ class App extends Component {
 
     render() {
         return (
-            <QueryClientProvider client={queryClient}>
-                <CreateShop />
-                <CreateNormalCustomer />
-                <CreateVIPCustomer />
-                <CreateEmployee />
-                <CreateMaterialExpense />
-                <CreateShopExpense />
-                <CreateProductGroup />
-                <CreateSalary />
-                <CreateAddInventory />
-                <AcceptUser />
+            <Suspense fallback={<p>Loading...</p>}>
+                <QueryClientProvider client={queryClient}>
+                    <CreateShop />
+                    <CreateNormalCustomer />
+                    <CreateVIPCustomer />
+                    <CreateEmployee />
+                    <CreateMaterialExpense />
+                    <CreateShopExpense />
+                    <CreateProductGroup />
+                    <CreateSalary />
+                    <CreateAddInventory />
+                    <AcceptUser />
 
-                <CreateProduct />
-                <Router>
-                    <Switch>
-                        {publicRoutes.map((route, idx) => (
-                            <AppRoute
-                                path={route.path}
-                                layout={NonAuthLayout}
-                                component={route.component}
-                                key={idx}
-                                isAuthProtected={false}
-                            />
-                        ))}
+                    <CreateProduct />
+                    <Router>
+                        <Switch>
+                            {publicRoutes.map((route, idx) => (
+                                <AppRoute
+                                    path={route.path}
+                                    layout={NonAuthLayout}
+                                    component={route.component}
+                                    key={idx}
+                                    isAuthProtected={false}
+                                />
+                            ))}
 
-                        {authProtectedRoutes.map((route, idx) => (
-                            <AppRoute
-                                path={route.path}
-                                layout={VerticalLayout}
-                                component={route.component}
-                                key={idx}
-                                isAuthProtected
-                            />
-                        ))}
-                    </Switch>
-                </Router>
-            </QueryClientProvider>
+                            {authProtectedRoutes.map((route, idx) => (
+                                <AppRoute
+                                    path={route.path}
+                                    layout={VerticalLayout}
+                                    component={route.component}
+                                    key={idx}
+                                    isAuthProtected
+                                />
+                            ))}
+                        </Switch>
+                    </Router>
+                </QueryClientProvider>
+            </Suspense>
         );
     }
 }

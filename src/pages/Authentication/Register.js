@@ -38,8 +38,8 @@ const Register = () => {
 
     return (
         <>
-            <div className="tw-w-screen tw-h-screen tw-flex tw-flex-col tw-items-center tw-overflow-hidden ">
-                <div className="tw-bg-gray-200 tw-p-4 tw-w-[277px] tw-mt-[250px] tw-relative">
+            <div className="tw-w-screen tw-h-screen tw-flex tw-flex-col tw-items-center tw-justify-center tw-overflow-hidden ">
+                <div className="tw-bg-gray-200 tw-p-4 tw-w-[277px] tw-relative">
                     <When condition={registerMutation.isLoading}>
                         <div className="tw-w-full tw-h-full tw-bg-white tw-opacity-50 tw-absolute tw-top-0 tw-left-0" />
                     </When>
