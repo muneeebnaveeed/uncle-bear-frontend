@@ -91,9 +91,11 @@ class SidebarContent extends Component {
                                 <li>
                                     <Link to="customers">Customers</Link>
                                 </li>
-                                <li>
-                                    <Link to="shops">Shops</Link>
-                                </li>
+                                {this.props.user?.role === 'ADMINISTRATOR' && (
+                                    <li>
+                                        <Link to="shops">Shops</Link>
+                                    </li>
+                                )}
                                 <li>
                                     <Link to="employees">Employees</Link>
                                 </li>
@@ -103,9 +105,11 @@ class SidebarContent extends Component {
                                 <li>
                                     <Link to="products">Products</Link>
                                 </li>
-                                <li>
-                                    <Link to="users">Users</Link>
-                                </li>
+                                {this.props.user?.role === 'ADMINISTRATOR' && (
+                                    <li>
+                                        <Link to="users">Users</Link>
+                                    </li>
+                                )}
                             </ul>
                         </li>
 
@@ -123,12 +127,14 @@ class SidebarContent extends Component {
                             </Link>
                         </li>
 
-                        <li>
-                            <Link to="audit" className=" waves-effect">
-                                <i className="ri-chat-1-line" />
-                                <span className="ml-1">Audit</span>
-                            </Link>
-                        </li>
+                        {this.props.user?.role === 'ADMINISTRATOR' && (
+                            <li>
+                                <Link to="audit" className=" waves-effect">
+                                    <i className="ri-chat-1-line" />
+                                    <span className="ml-1">Audit</span>
+                                </Link>
+                            </li>
+                        )}
                     </ul>
                 </div>
             </>
@@ -136,7 +142,7 @@ class SidebarContent extends Component {
     }
 }
 
-const mapStatetoProps = (state) => ({ ...state.Layout });
+const mapStatetoProps = (state) => ({ ...state.Layout, user: state.globals.user });
 
 export default withRouter(
     connect(mapStatetoProps, {

@@ -153,23 +153,25 @@ const CreateVIPCustomer = () => {
                     <Label>Balance</Label>
                     <Input type="number" name="balance" value={formik.values.balance} onChange={formik.handleChange} />
                 </FormGroup>
-                <FormGroup className="form-required">
-                    <Label>Shop</Label>
-                    <Creatable
-                        isDisabled={shops.isError || shops.isLoading}
-                        isLoading={shops.isLoading}
-                        placeholder="Select Shop"
-                        options={shops.data?.docs.map((doc) => ({ label: doc.address, value: doc }))}
-                        value={{ label: formik.values.shop?.address, value: formik.values.shop }}
-                        onChange={(shop) => formik.setFieldValue('shop', shop.value)}
-                        onCreateOption={(address) => {
-                            batch(() => {
-                                dispatch(setShopsData({ address }));
-                                dispatch(setShopsVisibility(true));
-                            });
-                        }}
-                    />
-                </FormGroup>
+                {state.globals.user?.role === 'ADMINISTRATOR' && (
+                    <FormGroup className="form-required">
+                        <Label>Shop</Label>
+                        <Creatable
+                            isDisabled={shops.isError || shops.isLoading}
+                            isLoading={shops.isLoading}
+                            placeholder="Select Shop"
+                            options={shops.data?.docs.map((doc) => ({ label: doc.address, value: doc }))}
+                            value={{ label: formik.values.shop?.address, value: formik.values.shop }}
+                            onChange={(shop) => formik.setFieldValue('shop', shop.value)}
+                            onCreateOption={(address) => {
+                                batch(() => {
+                                    dispatch(setShopsData({ address }));
+                                    dispatch(setShopsVisibility(true));
+                                });
+                            }}
+                        />
+                    </FormGroup>
+                )}
             </ModalBody>
             <ModalFooter>
                 <ButtonGroup>

@@ -15,6 +15,8 @@ export const del = (url, params = {}) => api.delete(url, { params }).then((res) 
 api.interceptors.request.use((config) => {
     const { shop } = store.getState().globals;
 
+    console.log(config);
+
     if (
         config.method !== 'get' ||
         config.url.includes('/auth/decode') ||

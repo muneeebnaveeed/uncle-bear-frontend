@@ -177,23 +177,6 @@ const CreateSalary = () => {
                         className="tw-resize-y tw-min-h-[80px] tw-max-h-[120px]"
                     />
                 </FormGroup>
-                {/* <FormGroup className="form-required">
-                    <Label>Shop</Label>
-                    <Creatable
-                        isDisabled={shops.isError || shops.isLoading}
-                        isLoading={shops.isLoading}
-                        placeholder="Select Shop"
-                        options={shops.data?.docs.map((doc) => ({ label: doc.address, value: doc }))}
-                        value={{ label: formik.values.shop?.address, value: formik.values.shop }}
-                        onChange={(shop) => formik.setFieldValue('shop', shop.value)}
-                        onCreateOption={(address) => {
-                            batch(() => {
-                                dispatch(setShopsData({ address }));
-                                dispatch(setShopsVisibility(true));
-                            });
-                        }}
-                    />
-                </FormGroup> */}
             </ModalBody>
             <ModalFooter>
                 <ButtonGroup>

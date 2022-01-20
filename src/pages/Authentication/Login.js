@@ -27,6 +27,7 @@ const Login = () => {
 
     const loginMutation = useMutation((payload) => post('/auth/login', payload), {
         onSuccess: (data) => {
+            console.log(data);
             localStorage.setItem('authUser', data.token);
             batch(() => {
                 dispatch(setUser(_.omit(data, ['token'])));

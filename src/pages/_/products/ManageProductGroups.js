@@ -24,7 +24,7 @@ const ManageProductGroups = () => {
     const alert = useAlert();
 
     const query = useQuery(['all-product-groups', state.globals.shop], () =>
-        get('/product-groups', { page: 1, limit: 5, sort: { name: 1 }, search: '' })
+        get('/product-groups', { page: 1, limit: 1000, sort: { name: 1 }, search: '' })
     );
 
     const deleteMutation = useMutation((id) => del(`/product-groups/id/${id}`), {
@@ -117,8 +117,9 @@ const ManageProductGroups = () => {
                                                             className="tw-w-[20px] tw-h-[20px]"
                                                             style={{ backgroundColor: e.color }}
                                                         />
-                                                        <p className="tw-mb-0">{`${e.name}${e.description ? `, ${e.description}` : ''
-                                                            }`}</p>
+                                                        <p className="tw-mb-0">{`${e.name}${
+                                                            e.description ? `, ${e.description}` : ''
+                                                        }`}</p>
                                                     </div>
                                                     <div className="tw-flex tw-gap-2">
                                                         <Button
